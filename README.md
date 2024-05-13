@@ -1,7 +1,4 @@
-## Introdução
-
-Seja bem vindo!
-Se você curtiu a extensão, não esqueça de deixar uma avaliação!
-
-Siga o canal no YouTube:
-- Academia dos Devs
+# APCSAFinalProject : caveDEAD
+This is a repository for our AP Computer Science A final project named
+## caveDEAD
+A game where you fall into a cave and hope that you don't end up DEAD!
