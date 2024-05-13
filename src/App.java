@@ -21,7 +21,7 @@ public class App extends Application {
         sphere.translateXProperty().set(WIDTH / 2);
         sphere.translateYProperty().set(HEIGHT / 2);
 
-        primaryStage.setTitle("Hello World");
+        primaryStage.setTitle("caveDEAD");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
