@@ -1,6 +1,5 @@
 public enum RoomModifier{
-    regular,
+    indoors,
     dark,
     cave,
-    
 }
