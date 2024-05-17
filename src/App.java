@@ -11,7 +11,17 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Sphere sphere = new Sphere(50);
+        Rectangle wall = RectangleBuilder.create()
+            .x(WIDTH / 2)
+            .y(WIDTH / 2)
+            .width(200)
+            .height(200)
+            .fill(
+                new ImagePattern(
+                    new Image("file:../textures/cavewall.jpg", 0, 0, 1, 1, true)
+                )
+            )
+            .build();
         
         Group group = new Group();
         group.getChildren().add(sphere);
