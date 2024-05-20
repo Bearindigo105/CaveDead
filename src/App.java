@@ -12,6 +12,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.paint.PhongMaterial;
 import javafx.stage.Stage;
 
 public class App extends Application {
@@ -27,7 +28,11 @@ public class App extends Application {
     public void start(Stage primaryStage) throws Exception {
         //Rectangle wall = new Rectangle(200, 200, new ImagePattern(new Image("file:textures/cavewall.jpg")));
 
+        PhongMaterial wallMaterial = new PhongMaterial();
+        wallMaterial.setDiffuseMap(new Image("file:textures/cavewall.jpg"));
+
         Box box = new Box(100, 20, 50);
+        box.setMaterial(wallMaterial);
         Group gameGroup = new Group();
         gameGroup.getChildren().addAll(box);
         
