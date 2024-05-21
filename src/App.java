@@ -1,19 +1,19 @@
+import javax.swing.Timer;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javafx.application.Application;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Camera;
 import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
+import javafx.scene.paint.*;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
-import javafx.scene.paint.ImagePattern;
-import javafx.scene.paint.PhongMaterial;
 import javafx.stage.Stage;
+
+import java.awt.AWTException;
+import java.awt.Robot;
 
 public class App extends Application {
 
@@ -21,60 +21,107 @@ public class App extends Application {
     public static final int HEIGHT = 800;
 
     public Camera camera;
-    public double prevMouseX;
-    public double prevMouseY;
+    private double prevMouseX;
+    private double prevMouseY;
+    private boolean isMouseLocked;
+    private boolean toggleMouseLock;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        //Rectangle wall = new Rectangle(200, 200, new ImagePattern(new Image("file:textures/cavewall.jpg")));
-
+        isMouseLocked = false;
         PhongMaterial wallMaterial = new PhongMaterial();
-        ImagePattern imagePattern = new ImagePattern(new Image("file:textures/cavewall.jpg"));
-        wallMaterial.setDiffuseMap(new Image("file:textures/cavewall.jpg", 100,100,false, false));
+        wallMaterial.setDiffuseMap(new Image("file:textures/cavewall.jpg"));
 
-        Box box = new Box(100, 20, 50);
+        Group mapGroup = new Group();
+        
+        Box box = new Box(50, 80, 50);
         box.setMaterial(wallMaterial);
 
-        Rectangle rectangle = new Rectangle(200, 400);
+        mapGroup.getChildren().addAll(box);
+
+        //Room room = new Room(Room.Type.blank);
+        
+        mapGroup.getChildren().addAll();
+        
+        Player player = new Player(0, 0, -500);
 
         Group gameGroup = new Group();
-        gameGroup.getChildren().addAll(box, rectangle);
+        gameGroup.getChildren().addAll(player, mapGroup);
         
-        Camera camera = new PerspectiveCamera(true);
-        camera.setNearClip(1);
-        camera.setFarClip(100000);
-        camera.translateXProperty().set(0);
-        camera.translateYProperty().set(0);
-        camera.translateZProperty().set(-500);
         Scene gameScene = new Scene(gameGroup, WIDTH, HEIGHT);
         gameScene.setFill(Color.PURPLE);
-        gameScene.setCamera(camera);
+        gameScene.setCamera(player.playerCamera);
+        camera = player.playerCamera;
 
         primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             switch (event.getCode()) {
-                case W:
-                    camera.translateZProperty().set(camera.getTranslateZ() + 10);
-                    break;
-                case S:
-                    camera.translateZProperty().set(camera.getTranslateZ() - 10);
-                    break;
-                case A:
-                    camera.translateXProperty().set(camera.getTranslateX() - 10);
-                    break;
-                case D:
-                    camera.translateXProperty().set(camera.getTranslateX() + 10);
-                    break;
-                default:
-                    break;
+            case W:
+                player.setZAcceleration(1);
+                break;
+            case S:
+                player.setZAcceleration(-1);
+                break;
+            case D:
+                player.setXAcceleration(1);
+                break;
+            case A:
+                player.setXAcceleration(-1);
+                break;
+            case ESCAPE:
+                isMouseLocked = false;
+                break;
+            default:
+                break;
+            }
+        });
+
+        primaryStage.addEventHandler(KeyEvent.KEY_RELEASED, event -> {
+            switch (event.getCode()) {
+            case W:
+                player.setZAcceleration(0);
+                break;
+            case S:
+                player.setZAcceleration(0);
+                break;
+            case D:
+                player.setXAcceleration(0);
+                break;
+            case A:
+                player.setXAcceleration(0);
+                break;
+            default:
+                break;
             }
         });
 
         gameScene.setOnMouseMoved(event -> {
+            if(!isMouseLocked ){return;} //|| (event.getSceneX() != WIDTH/2 && event.getSceneY() != HEIGHT/2)
             camera.getTransforms().add(new Rotate((prevMouseY - event.getSceneY())/ 70, Rotate.X_AXIS));
-            camera.getTransforms().add(new Rotate((event.getSceneX() - prevMouseX)/ 70, Rotate.Y_AXIS));
+            player.getTransforms().add(new Rotate((event.getSceneX() - prevMouseX)/ 70, Rotate.Y_AXIS));
             prevMouseX = event.getSceneX();
             prevMouseY = event.getSceneY();
+            try {
+                Robot robot = new Robot();
+                robot.mouseMove((int)primaryStage.getX() + WIDTH / 2, (int)primaryStage.getY() + HEIGHT / 2);
+            } catch (AWTException e) {
+                // Auto-generated catch block
+                e.printStackTrace();
+            }
         });
+
+        gameScene.setOnMouseClicked(event -> {
+            isMouseLocked = true;
+        });
+
+        ActionListener update = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                player.update();
+            }
+        };
+
+        Timer timer = new Timer(17, update);
+        timer.start();
 
         Group titleGroup = new Group();
         Scene titleScene = new Scene(titleGroup, WIDTH, HEIGHT);
