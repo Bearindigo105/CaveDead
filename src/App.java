@@ -29,12 +29,16 @@ public class App extends Application {
         //Rectangle wall = new Rectangle(200, 200, new ImagePattern(new Image("file:textures/cavewall.jpg")));
 
         PhongMaterial wallMaterial = new PhongMaterial();
-        wallMaterial.setDiffuseMap(new Image("file:textures/cavewall.jpg"));
+        ImagePattern imagePattern = new ImagePattern(new Image("file:textures/cavewall.jpg"));
+        wallMaterial.setDiffuseMap(new Image("file:textures/cavewall.jpg", 100,100,false, false));
 
         Box box = new Box(100, 20, 50);
         box.setMaterial(wallMaterial);
+
+        Rectangle rectangle = new Rectangle(200, 400);
+
         Group gameGroup = new Group();
-        gameGroup.getChildren().addAll(box);
+        gameGroup.getChildren().addAll(box, rectangle);
         
         Camera camera = new PerspectiveCamera(true);
         camera.setNearClip(1);
@@ -59,6 +63,8 @@ public class App extends Application {
                     break;
                 case D:
                     camera.translateXProperty().set(camera.getTranslateX() + 10);
+                    break;
+                default:
                     break;
             }
         });
