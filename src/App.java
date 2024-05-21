@@ -24,7 +24,7 @@ public class App extends Application {
     private double prevMouseX;
     private double prevMouseY;
     private boolean isMouseLocked;
-    private boolean toggleMouseLock;
+    private boolean moveMouse;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -95,18 +95,9 @@ public class App extends Application {
         });
 
         gameScene.setOnMouseMoved(event -> {
-            if(!isMouseLocked ){return;} //|| (event.getSceneX() != WIDTH/2 && event.getSceneY() != HEIGHT/2)
-            camera.getTransforms().add(new Rotate((prevMouseY - event.getSceneY())/ 70, Rotate.X_AXIS));
             player.getTransforms().add(new Rotate((event.getSceneX() - prevMouseX)/ 70, Rotate.Y_AXIS));
             prevMouseX = event.getSceneX();
             prevMouseY = event.getSceneY();
-            try {
-                Robot robot = new Robot();
-                robot.mouseMove((int)primaryStage.getX() + WIDTH / 2, (int)primaryStage.getY() + HEIGHT / 2);
-            } catch (AWTException e) {
-                // Auto-generated catch block
-                e.printStackTrace();
-            }
         });
 
         gameScene.setOnMouseClicked(event -> {
