@@ -21,15 +21,12 @@ public class Player extends Group{
         playerCamera.setNearClip(0.1);
         playerCamera.setFarClip(10000);
         this.getChildren().addAll(hitbox, playerCamera);
-        
         for (Node childNode : this.getChildren()) {
-            childNode.translateXProperty().bind(this.translateXProperty());
-            childNode.translateYProperty().bind(this.translateYProperty());
-            childNode.translateZProperty().bind(this.translateZProperty());
+            childNode.translateXProperty().bind(translateXProperty());
+            childNode.translateYProperty().bind(translateYProperty());
+            childNode.translateZProperty().bind(translateZProperty());
         }
-        translateXProperty().set(x);
-        translateYProperty().set(y);
-        translateZProperty().set(z);
+        setPosition(x, y, z);
     }
 
     public Bounds getBounds(){
@@ -58,6 +55,14 @@ public class Player extends Group{
 
     public double getzAcceleration() {
         return zAcceleration;
+    }
+
+    public void setPosition(double x, double y, double z){
+        
+        translateXProperty().set(x);
+        translateYProperty().set(y);
+        translateZProperty().set(z);
+        
     }
 
     public void update(){

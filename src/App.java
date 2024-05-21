@@ -4,6 +4,7 @@ import java.awt.event.ActionListener;
 import javafx.application.Application;
 import javafx.scene.Camera;
 import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
@@ -20,16 +21,18 @@ public class App extends Application {
 
     public Camera camera;
     private double prevMouseX;
+    private boolean isMouseLocked;
+    private boolean moveMouse;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        isMouseLocked = false;
         PhongMaterial wallMaterial = new PhongMaterial();
         wallMaterial.setDiffuseMap(new Image("file:textures/cavewall.jpg"));
 
         Group mapGroup = new Group();
         
         Box box = new Box(50, 80, 50);
-        box.setMaterial(wallMaterial);
 
         mapGroup.getChildren().addAll(box);
 
@@ -44,8 +47,15 @@ public class App extends Application {
         
         Scene gameScene = new Scene(gameGroup, WIDTH, HEIGHT);
         gameScene.setFill(Color.PURPLE);
-        gameScene.setCamera(player.playerCamera);
-        camera = player.playerCamera;
+        camera = new PerspectiveCamera(true);
+        
+        camera.setNearClip(1);
+        camera.setFarClip(10000);
+        gameScene.setCamera(camera);
+        camera.translateXProperty().set(-50);
+        camera.translateYProperty().set(0);
+        camera.translateZProperty().set(-530);
+        camera.getTransforms().add(new Rotate(-10, Rotate.X_AXIS));
 
         primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             switch (event.getCode()) {
@@ -60,6 +70,9 @@ public class App extends Application {
                 break;
             case A:
                 player.setXAcceleration(-1);
+                break;
+            case ESCAPE:
+                isMouseLocked = false;
                 break;
             default:
                 break;
@@ -86,8 +99,12 @@ public class App extends Application {
         });
 
         gameScene.setOnMouseMoved(event -> {
-            player.getTransforms().add(new Rotate((event.getScreenX() - prevMouseX)/ 70, Rotate.Y_AXIS));
-            prevMouseX = event.getScreenX();
+            player.getTransforms().add(new Rotate((event.getSceneX() - prevMouseX)/ 70, Rotate.Y_AXIS));
+            prevMouseX = event.getSceneX();
+        });
+
+        gameScene.setOnMouseClicked(event -> {
+            isMouseLocked = true;
         });
 
         ActionListener update = new ActionListener() {
