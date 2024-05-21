@@ -17,8 +17,8 @@ import java.awt.Robot;
 
 public class App extends Application {
 
-    public static final int WIDTH = 1400;
-    public static final int HEIGHT = 800;
+    public static final int WIDTH = 800;
+    public static final int HEIGHT = 600;
 
     public Camera camera;
     private double prevMouseX;
@@ -97,7 +97,6 @@ public class App extends Application {
         gameScene.setOnMouseMoved(event -> {
             player.getTransforms().add(new Rotate((event.getSceneX() - prevMouseX)/ 70, Rotate.Y_AXIS));
             prevMouseX = event.getSceneX();
-            prevMouseY = event.getSceneY();
         });
 
         gameScene.setOnMouseClicked(event -> {
