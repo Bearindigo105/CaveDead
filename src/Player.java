@@ -21,6 +21,9 @@ public class Player extends Group{
         playerCamera.setNearClip(0.1);
         playerCamera.setFarClip(10000);
         this.getChildren().addAll(hitbox, playerCamera);
+        
+        playerCamera.translateZProperty().set(getTranslateZ() - 100);
+        playerCamera.translateXProperty().set(getTranslateX() - 100);
         for (Node childNode : this.getChildren()) {
             childNode.translateXProperty().bind(this.translateXProperty());
             childNode.translateYProperty().bind(this.translateYProperty());

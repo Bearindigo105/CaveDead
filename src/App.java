@@ -12,8 +12,6 @@ import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
-import java.awt.AWTException;
-import java.awt.Robot;
 
 public class App extends Application {
 
@@ -22,13 +20,9 @@ public class App extends Application {
 
     public Camera camera;
     private double prevMouseX;
-    private double prevMouseY;
-    private boolean isMouseLocked;
-    private boolean moveMouse;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        isMouseLocked = false;
         PhongMaterial wallMaterial = new PhongMaterial();
         wallMaterial.setDiffuseMap(new Image("file:textures/cavewall.jpg"));
 
@@ -67,9 +61,6 @@ public class App extends Application {
             case A:
                 player.setXAcceleration(-1);
                 break;
-            case ESCAPE:
-                isMouseLocked = false;
-                break;
             default:
                 break;
             }
@@ -95,12 +86,8 @@ public class App extends Application {
         });
 
         gameScene.setOnMouseMoved(event -> {
-            player.getTransforms().add(new Rotate((event.getSceneX() - prevMouseX)/ 70, Rotate.Y_AXIS));
-            prevMouseX = event.getSceneX();
-        });
-
-        gameScene.setOnMouseClicked(event -> {
-            isMouseLocked = true;
+            player.getTransforms().add(new Rotate((event.getScreenX() - prevMouseX)/ 70, Rotate.Y_AXIS));
+            prevMouseX = event.getScreenX();
         });
 
         ActionListener update = new ActionListener() {
