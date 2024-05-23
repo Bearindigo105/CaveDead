@@ -1,7 +1,12 @@
 import javax.swing.Timer;
+
+import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.geometry.Point2D;
+import javafx.geometry.Point3D;
 import javafx.scene.Camera;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
@@ -13,7 +18,6 @@ import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
-
 public class App extends Application {
 
     public static final int WIDTH = 800;
@@ -22,7 +26,7 @@ public class App extends Application {
     public Camera camera;
     private double prevMouseX;
     private boolean isMouseLocked;
-    private boolean moveMouse;
+    private boolean isMouseMovedByRobot;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -31,76 +35,85 @@ public class App extends Application {
         wallMaterial.setDiffuseMap(new Image("file:textures/cavewall.jpg"));
 
         Group mapGroup = new Group();
-        
+
         Box box = new Box(50, 80, 50);
+        box.setMaterial(wallMaterial);
 
         mapGroup.getChildren().addAll(box);
 
-        //Room room = new Room(Room.Type.blank);
-        
+        // Room room = new Room(Room.Type.blank);
+
         mapGroup.getChildren().addAll();
-        
+
         Player player = new Player(0, 0, -500);
 
         Group gameGroup = new Group();
         gameGroup.getChildren().addAll(player, mapGroup);
-        
+
         Scene gameScene = new Scene(gameGroup, WIDTH, HEIGHT);
         gameScene.setFill(Color.PURPLE);
-        camera = new PerspectiveCamera(true);
-        
-        camera.setNearClip(1);
-        camera.setFarClip(10000);
-        gameScene.setCamera(camera);
-        camera.translateXProperty().set(-50);
-        camera.translateYProperty().set(0);
-        camera.translateZProperty().set(-530);
-        camera.getTransforms().add(new Rotate(-10, Rotate.X_AXIS));
+
+        gameScene.setCamera(player.playerCamera);
 
         primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             switch (event.getCode()) {
-            case W:
-                player.setZAcceleration(1);
-                break;
-            case S:
-                player.setZAcceleration(-1);
-                break;
-            case D:
-                player.setXAcceleration(1);
-                break;
-            case A:
-                player.setXAcceleration(-1);
-                break;
-            case ESCAPE:
-                isMouseLocked = false;
-                break;
-            default:
-                break;
+                case W:
+                    player.setzAcceleration(1);
+                    break;
+                case S:
+                    player.setzAcceleration(-1);
+                    break;
+                case D:
+                    player.setxAcceleration(1);
+                    break;
+                case A:
+                    player.setxAcceleration(-1);
+                    break;
+                case ESCAPE:
+                    isMouseLocked = false;
+                    break;
+                default:
+                    break;
             }
         });
 
         primaryStage.addEventHandler(KeyEvent.KEY_RELEASED, event -> {
             switch (event.getCode()) {
-            case W:
-                player.setZAcceleration(0);
-                break;
-            case S:
-                player.setZAcceleration(0);
-                break;
-            case D:
-                player.setXAcceleration(0);
-                break;
-            case A:
-                player.setXAcceleration(0);
-                break;
-            default:
-                break;
+                case W:
+                    player.setzAcceleration(0);
+                    break;
+                case S:
+                    player.setzAcceleration(0);
+                    break;
+                case D:
+                    player.setxAcceleration(0);
+                    break;
+                case A:
+                    player.setxAcceleration(0);
+                    break;
+                default:
+                    break;
             }
         });
 
         gameScene.setOnMouseMoved(event -> {
-            player.getTransforms().add(new Rotate((event.getSceneX() - prevMouseX)/ 70, Rotate.Y_AXIS));
-            prevMouseX = event.getSceneX();
+            Platform.runLater(() -> {
+                if (isMouseLocked && isMouseMovedByRobot) {
+                    player.rotateY.setAngle(player.rotateY.getAngle() + (event.getSceneX() - prevMouseX) / 70);
+                    prevMouseX = event.getSceneX();
+                    try {
+                        Robot robot = new Robot();
+                        robot.mouseMove((int) (primaryStage.getX() + WIDTH / 2),
+                                (int) (primaryStage.getY() + HEIGHT / 2));
+                        return;
+                    } catch (Exception e) {
+                        // TODO: handle exception
+                    }
+                } else if (isMouseMovedByRobot) {
+                    isMouseMovedByRobot = false;
+                }
+                isMouseMovedByRobot = true;
+            });
         });
 
         gameScene.setOnMouseClicked(event -> {
