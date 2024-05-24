@@ -11,15 +11,15 @@ public class Player extends Group {
 
     public Camera playerCamera;
     private Box hitbox;
-    private double xAcceleration, yAcceleration, zAcceleration;
+    private double forwardAcceleration, verticalAcceleration, sidewardsAcceleration;
     public Rotate rotateY;
 
     public Player(double x, double y, double z) {
         hitbox = new Box(50, 80, 50);
         playerCamera = new PerspectiveCamera(true);
-        xAcceleration = 0;
-        yAcceleration = 0;
-        zAcceleration = 0;
+        forwardAcceleration = 0;
+        verticalAcceleration = 0;
+        sidewardsAcceleration = 0;
         rotateY = new Rotate(0, Rotate.Y_AXIS);
         playerCamera.setNearClip(0.1);
         playerCamera.setFarClip(10000);
@@ -40,28 +40,28 @@ public class Player extends Group {
         return hitbox.getBoundsInLocal();
     }
 
-    public void setxAcceleration(double x) {
-        xAcceleration = x;
+    public void setForwardAcceleration(double x) {
+        forwardAcceleration = x;
     }
 
-    public double getxAcceleration() {
-        return xAcceleration;
+    public double getForwardAcceleration() {
+        return forwardAcceleration;
     }
 
-    public void setyAcceleration(double yAcceleration) {
-        this.yAcceleration = yAcceleration;
+    public void setVerticalAcceleration(double yAcceleration) {
+        this.verticalAcceleration = yAcceleration;
     }
 
-    public double getyAcceleration() {
-        return yAcceleration;
+    public double getVerticalAcceleration() {
+        return verticalAcceleration;
     }
 
-    public void setzAcceleration(double zAcceleration) {
-        this.zAcceleration = zAcceleration;
+    public void setSidewardsAcceleration(double zAcceleration) {
+        this.sidewardsAcceleration = zAcceleration;
     }
 
-    public double getzAcceleration() {
-        return zAcceleration;
+    public double getSidewardsAcceleration() {
+        return sidewardsAcceleration;
     }
 
     public void setPosition(double x, double y, double z) {
@@ -71,9 +71,9 @@ public class Player extends Group {
     }
 
     public void update() {
-        translateXProperty().set(getTranslateX() + xAcceleration);
-        translateYProperty().set(getTranslateY() + yAcceleration);
-        translateZProperty().set(getTranslateZ() + zAcceleration);
+        translateXProperty().set(getTranslateX() + forwardAcceleration);
+        translateYProperty().set(getTranslateY() + verticalAcceleration);
+        translateZProperty().set(getTranslateZ() + sidewardsAcceleration);
     }
 
 }

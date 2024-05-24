@@ -24,7 +24,6 @@ public class App extends Application {
     public static final int HEIGHT = 600;
 
     public Camera camera;
-    private double prevMouseX;
     private boolean isMouseLocked;
     private boolean isMouseMovedByRobot;
 
@@ -33,7 +32,8 @@ public class App extends Application {
         isMouseLocked = false;
         PhongMaterial wallMaterial = new PhongMaterial();
         wallMaterial.setDiffuseMap(new Image("file:textures/cavewall.jpg"));
-
+        
+        Robot robot = new Robot();
         Group mapGroup = new Group();
 
         Box box = new Box(50, 80, 50);
@@ -58,16 +58,16 @@ public class App extends Application {
         primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             switch (event.getCode()) {
                 case W:
-                    player.setzAcceleration(1);
+                    player.setSidewardsAcceleration(1);
                     break;
                 case S:
-                    player.setzAcceleration(-1);
+                    player.setSidewardsAcceleration(-1);
                     break;
                 case D:
-                    player.setxAcceleration(1);
+                    player.setForwardAcceleration(1);
                     break;
                 case A:
-                    player.setxAcceleration(-1);
+                    player.setForwardAcceleration(-1);
                     break;
                 case ESCAPE:
                     isMouseLocked = false;
@@ -80,16 +80,16 @@ public class App extends Application {
         primaryStage.addEventHandler(KeyEvent.KEY_RELEASED, event -> {
             switch (event.getCode()) {
                 case W:
-                    player.setzAcceleration(0);
+                    player.setSidewardsAcceleration(0);
                     break;
                 case S:
-                    player.setzAcceleration(0);
+                    player.setSidewardsAcceleration(0);
                     break;
                 case D:
-                    player.setxAcceleration(0);
+                    player.setForwardAcceleration(0);
                     break;
                 case A:
-                    player.setxAcceleration(0);
+                    player.setForwardAcceleration(0);
                     break;
                 default:
                     break;
@@ -97,23 +97,22 @@ public class App extends Application {
         });
 
         gameScene.setOnMouseMoved(event -> {
-            Platform.runLater(() -> {
-                if (isMouseLocked && isMouseMovedByRobot) {
-                    player.rotateY.setAngle(player.rotateY.getAngle() + (event.getSceneX() - prevMouseX) / 70);
-                    prevMouseX = event.getSceneX();
-                    try {
-                        Robot robot = new Robot();
-                        robot.mouseMove((int) (primaryStage.getX() + WIDTH / 2),
-                                (int) (primaryStage.getY() + HEIGHT / 2));
-                        return;
-                    } catch (Exception e) {
-                        // TODO: handle exception
-                    }
-                } else if (isMouseMovedByRobot) {
-                    isMouseMovedByRobot = false;
-                }
+            if (isMouseLocked && !isMouseMovedByRobot) {
+                
                 isMouseMovedByRobot = true;
-            });
+                player.rotateY.setAngle(player.rotateY.getAngle() + (event.getSceneX() - WIDTH / 2) / 70);
+                
+                
+                try {
+                    robot.mouseMove((int) (primaryStage.getX() + WIDTH / 2),
+                            (int) (primaryStage.getY() + HEIGHT / 2));
+                    return;
+                } catch (Exception e) {}
+            } else if (isMouseMovedByRobot) {
+                isMouseMovedByRobot = false;
+            }        
+            System.out.println(isMouseMovedByRobot);
+            
         });
 
         gameScene.setOnMouseClicked(event -> {
