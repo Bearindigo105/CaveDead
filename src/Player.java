@@ -1,9 +1,13 @@
+import javafx.scene.robot.Robot;
+
 import javafx.geometry.Bounds;
 import javafx.geometry.Point3D;
 import javafx.scene.Camera;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
+import javafx.scene.Scene;
+import javafx.scene.input.MouseButton;
 import javafx.scene.shape.Box;
 import javafx.scene.transform.Rotate;
 
@@ -13,14 +17,20 @@ public class Player extends Group {
     private Box hitbox;
     private double forwardAcceleration, verticalAcceleration, sidewardsAcceleration;
     public Rotate rotateY;
+    public Rotate rotateX;
+    public Scene scene;
 
-    public Player(double x, double y, double z) {
+    public Player(double x, double y, double z, Scene s) {
+
+        Robot robot = new Robot();
+        scene = s;
         hitbox = new Box(50, 80, 50);
         playerCamera = new PerspectiveCamera(true);
         forwardAcceleration = 0;
         verticalAcceleration = 0;
         sidewardsAcceleration = 0;
         rotateY = new Rotate(0, Rotate.Y_AXIS);
+        rotateX = new Rotate(0, Rotate.X_AXIS);
         playerCamera.setNearClip(0.1);
         playerCamera.setFarClip(10000);
         this.getChildren().addAll(hitbox, playerCamera);
@@ -32,8 +42,20 @@ public class Player extends Group {
         rotateY.pivotXProperty().bind(translateXProperty());
         rotateY.pivotYProperty().bind(translateYProperty());
         rotateY.pivotZProperty().bind(translateZProperty());
-        getTransforms().add(rotateY);
+        rotateX.pivotXProperty().bind(translateXProperty());
+        rotateX.pivotYProperty().bind(translateYProperty());
+        rotateX.pivotZProperty().bind(translateZProperty());
+
+        getTransforms().addAll(rotateY, rotateX);
         setPosition(x, y, z);
+
+
+        scene.setOnMousePressed(event -> {
+            if (event.getButton() == MouseButton.SECONDARY){
+                rotateY.setAngle(rotateY.getAngle() + (event.getSceneX() - scene.getWidth() / 2) / 100);
+                rotateX.setAngle(rotateX.getAngle() + (event.getSceneY() - scene.getHeight() / 2) / 100);
+            }
+        });
     }
 
     public Bounds getBounds() {

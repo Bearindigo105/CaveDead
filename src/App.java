@@ -1,21 +1,14 @@
 import javax.swing.Timer;
 
-import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.geometry.Point2D;
-import javafx.geometry.Point3D;
-import javafx.scene.Camera;
 import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.*;
 import javafx.scene.shape.*;
-import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
 public class App extends Application {
@@ -23,21 +16,13 @@ public class App extends Application {
     public static final int WIDTH = 800;
     public static final int HEIGHT = 600;
 
-    public Camera camera;
-    private boolean isMouseLocked;
-    private boolean isMouseMovedByRobot;
-
     @Override
     public void start(Stage primaryStage) throws Exception {
-        isMouseLocked = false;
         PhongMaterial wallMaterial = new PhongMaterial();
-        wallMaterial.setDiffuseMap(new Image("file:textures/cavewall.jpg"));
-        
-        Robot robot = new Robot();
+        wallMaterial.setDiffuseMap(new Image("file:/resources/textures/cavewall.jpg"));
         Group mapGroup = new Group();
 
-        Box box = new Box(50, 80, 50);
-        box.setMaterial(wallMaterial);
+        Door box = new Door(wallMaterial);
 
         mapGroup.getChildren().addAll(box);
 
@@ -45,12 +30,17 @@ public class App extends Application {
 
         mapGroup.getChildren().addAll();
 
-        Player player = new Player(0, 0, -500);
 
         Group gameGroup = new Group();
-        gameGroup.getChildren().addAll(player, mapGroup);
 
         Scene gameScene = new Scene(gameGroup, WIDTH, HEIGHT);
+
+        
+        Player player = new Player(0, 0, -500, gameScene);
+
+        
+        gameGroup.getChildren().addAll(player, mapGroup);
+
         gameScene.setFill(Color.PURPLE);
 
         gameScene.setCamera(player.playerCamera);
@@ -70,7 +60,6 @@ public class App extends Application {
                     player.setForwardAcceleration(-1);
                     break;
                 case ESCAPE:
-                    isMouseLocked = false;
                     break;
                 default:
                     break;
@@ -94,29 +83,6 @@ public class App extends Application {
                 default:
                     break;
             }
-        });
-
-        gameScene.setOnMouseMoved(event -> {
-            if (isMouseLocked && !isMouseMovedByRobot) {
-                
-                isMouseMovedByRobot = true;
-                player.rotateY.setAngle(player.rotateY.getAngle() + (event.getSceneX() - WIDTH / 2) / 70);
-                
-                
-                try {
-                    robot.mouseMove((int) (primaryStage.getX() + WIDTH / 2),
-                            (int) (primaryStage.getY() + HEIGHT / 2));
-                    return;
-                } catch (Exception e) {}
-            } else if (isMouseMovedByRobot) {
-                isMouseMovedByRobot = false;
-            }        
-            System.out.println(isMouseMovedByRobot);
-            
-        });
-
-        gameScene.setOnMouseClicked(event -> {
-            isMouseLocked = true;
         });
 
         ActionListener update = new ActionListener() {
