@@ -20,7 +20,7 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         PhongMaterial wallMaterial = new PhongMaterial();
-        wallMaterial.setDiffuseMap(new Image("file:/resources/textures/cavewall.jpg"));
+        wallMaterial.setDiffuseMap(new Image("file:/textures/cavewall.jpg"));
         Group mapGroup = new Group();
 
         Door box = new Door();
