@@ -3,6 +3,7 @@ import javax.swing.Timer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -22,7 +23,8 @@ public class App extends Application {
         wallMaterial.setDiffuseMap(new Image("file:/resources/textures/cavewall.jpg"));
         Group mapGroup = new Group();
 
-        Door box = new Door(wallMaterial);
+        Door box = new Door();
+        box.setMaterial(wallMaterial);
 
         mapGroup.getChildren().addAll(box);
 
@@ -41,59 +43,51 @@ public class App extends Application {
         
         gameGroup.getChildren().addAll(player, mapGroup);
 
-        gameScene.setFill(Color.PURPLE);
+        gameScene.setFill(Color.ALICEBLUE);
 
         gameScene.setCamera(player.playerCamera);
 
         primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            switch (event.getCode()) {
-                case W:
-                    player.setSidewardsAcceleration(1);
-                    break;
-                case S:
-                    player.setSidewardsAcceleration(-1);
-                    break;
-                case D:
-                    player.setForwardAcceleration(1);
-                    break;
-                case A:
-                    player.setForwardAcceleration(-1);
-                    break;
-                case ESCAPE:
-                    break;
-                default:
-                    break;
-            }
+            Platform.runLater(() -> {
+                switch (event.getCode()) {
+                    case W:
+                        player.setForwardAcceleration(1);
+                        break;
+                    case S:
+                        player.setForwardAcceleration(-1);
+                        break;
+                    case D:
+                        player.setSidewardAcceleration(1);
+                        break;
+                    case A:
+                        player.setSidewardAcceleration(-1);
+                        break;
+                    default:
+                        break;
+                }
+            }); 
         });
 
         primaryStage.addEventHandler(KeyEvent.KEY_RELEASED, event -> {
-            switch (event.getCode()) {
-                case W:
-                    player.setSidewardsAcceleration(0);
-                    break;
-                case S:
-                    player.setSidewardsAcceleration(0);
-                    break;
-                case D:
-                    player.setForwardAcceleration(0);
-                    break;
-                case A:
-                    player.setForwardAcceleration(0);
-                    break;
-                default:
-                    break;
-            }
+            Platform.runLater(() -> {
+                switch (event.getCode()) {
+                    case W:
+                        player.setForwardAcceleration(0);
+                        break;
+                    case S:
+                        player.setForwardAcceleration(0);
+                        break;
+                    case D:
+                        player.setSidewardAcceleration(0);
+                        break;
+                    case A:
+                        player.setSidewardAcceleration(0);
+                        break;
+                    default:
+                        break;
+                }
+            });
         });
-
-        ActionListener update = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                player.update();
-            }
-        };
-
-        Timer timer = new Timer(17, update);
-        timer.start();
 
         Group titleGroup = new Group();
         Scene titleScene = new Scene(titleGroup, WIDTH, HEIGHT);

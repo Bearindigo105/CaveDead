@@ -17,14 +17,14 @@ import javafx.scene.shape.Box;
 
 public class Door extends Box{
 
-    public Door(PhongMaterial material) throws URISyntaxException{
-        super(50, 80, 50);
+    public Door() throws URISyntaxException{
+        super(50, 80, 10);
         playSound();
-        this.setMaterial(material);
     }
 
     private void playSound() throws URISyntaxException {
-        MediaPlayer player = new MediaPlayer( new Media(getClass().getResource("/music/hero.mp3").toURI().toString()));
+        Media sound = new Media(new File("sounds/dooropen.mp3").toURI().toString());
+        MediaPlayer player = new MediaPlayer(sound);
         player.play();
     }
 
