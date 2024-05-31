@@ -1,3 +1,4 @@
+package main.java;
 import javafx.scene.robot.Robot;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
@@ -48,16 +49,15 @@ public class Player extends Group {
         getTransforms().addAll(rotateY, rotateX);
         setPosition(x, y, z);
 
-
         scene.setOnMousePressed(event -> {
             Platform.runLater(() -> {
-                if (event.getButton() == MouseButton.SECONDARY){
+                if (event.getButton() == MouseButton.SECONDARY) {
                     rotateX.setAngle(rotateX.getAngle() + (scene.getHeight() / 2 - event.getSceneY()) / 70);
                     rotateY.setAngle(rotateY.getAngle() + (event.getSceneX() - scene.getWidth() / 2) / 70);
                 }
             });
         });
-        
+
         new AnimationTimer() {
             @Override
             public void handle(long now) {

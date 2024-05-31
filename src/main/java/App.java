@@ -1,7 +1,5 @@
-import javax.swing.Timer;
+package main.java;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Group;
@@ -20,27 +18,23 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         PhongMaterial wallMaterial = new PhongMaterial();
-        wallMaterial.setDiffuseMap(new Image("file:/textures/cavewall.jpg"));
+        wallMaterial.setDiffuseMap(new Image("file:src/main/resources/textures/cavewall.jpg"));
         Group mapGroup = new Group();
 
-        Door box = new Door();
-        box.setMaterial(wallMaterial);
+        //Box box = new Door(wallMaterial);
 
-        mapGroup.getChildren().addAll(box);
+        
 
-        // Room room = new Room(Room.Type.blank);
+        Room room = new Room(Room.Type.blank);
 
-        mapGroup.getChildren().addAll();
-
-
+        mapGroup.getChildren().addAll(room);
+        
         Group gameGroup = new Group();
 
         Scene gameScene = new Scene(gameGroup, WIDTH, HEIGHT);
 
-        
         Player player = new Player(0, 0, -500, gameScene);
 
-        
         gameGroup.getChildren().addAll(player, mapGroup);
 
         gameScene.setFill(Color.ALICEBLUE);
@@ -65,7 +59,7 @@ public class App extends Application {
                     default:
                         break;
                 }
-            }); 
+            });
         });
 
         primaryStage.addEventHandler(KeyEvent.KEY_RELEASED, event -> {
