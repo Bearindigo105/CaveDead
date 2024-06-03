@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.Group?>
+<?import main.java.Door?>
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.image.Image?>
 
 <Group xmlns:fx="http://javafx.com/fxml">
     <children>
-        <Box fx:id="box" width="50" height="80" depth="10">
+        <Box fx:id="door1" width="50" height="80" depth="10">
             <material>
                 <PhongMaterial>
                     <diffuseMap>
-                        <Image url="@src/main/resources/textures/cavewall.png"/>
+                    
+                        <Image url="@../images/cavewall.jpg"/>
+                    
                     </diffuseMap>
                 </PhongMaterial>
             </material>

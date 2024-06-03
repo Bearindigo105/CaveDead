@@ -1,12 +1,9 @@
 package main.java;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.Collection;
 
-import javafx.fxml.FXMLLoader;
+import java.io.IOException;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.shape.*;
 
 public class Room extends Group {
     private Type type;
@@ -29,11 +26,23 @@ public class Room extends Group {
     public Room(Type type) throws IOException {
         super();
         this.type = type;
-        loadFXML("../resources/fxmls/corridor.fxml");
+        LoadRoom();
     }
 
-    public void loadFXML(String pathName) throws IOException {
-        System.out.println(getClass().getResource(pathName));
-        this.getChildren().addAll(((Group)FXMLLoader.load(Room.class.getResource(pathName))).getChildren());
+    public void LoadRoom() {
+        switch (type) {
+            case Type.blank:
+                break;
+            case Type.corridor:
+                Box wall1 = new Box(10, 80, 300);
+                Box wall2 = new Box(10, 80, 300);
+                this.getChildren().addAll(wall1, wall2);
+                break;
+        }
+    }
+
+    public void bindAndAdd(Node node, double x, double y, double z){
+        node.translateYProperty().bind(translateYProperty());
+        node.translateXProperty().bind(translateXProperty());
     }
 }

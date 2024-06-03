@@ -17,15 +17,13 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        PhongMaterial wallMaterial = new PhongMaterial();
-        wallMaterial.setDiffuseMap(new Image("file:src/main/resources/textures/cavewall.jpg"));
+        PhongMaterial doorMaterial = new PhongMaterial();
+        doorMaterial.setDiffuseMap(new Image("file:src/main/resources/images/metaldoor.jpg"));
         Group mapGroup = new Group();
 
-        //Box box = new Door(wallMaterial);
-
+        //Box box = new Door(false);
         
-
-        Room room = new Room(Room.Type.blank);
+        Room room = new Room(Room.Type.corridor);
 
         mapGroup.getChildren().addAll(room);
         
@@ -35,7 +33,8 @@ public class App extends Application {
 
         Player player = new Player(0, 0, -500, gameScene);
 
-        gameGroup.getChildren().addAll(player, mapGroup);
+        HUD hud = new HUD();
+        gameGroup.getChildren().addAll(player, mapGroup, hud);
 
         gameScene.setFill(Color.ALICEBLUE);
 
