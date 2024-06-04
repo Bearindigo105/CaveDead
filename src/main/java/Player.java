@@ -1,14 +1,12 @@
 package main.java;
-import javafx.scene.robot.Robot;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.geometry.Bounds;
-import javafx.geometry.Point3D;
 import javafx.scene.Camera;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
+import javafx.scene.SubScene;
 import javafx.scene.input.MouseButton;
 import javafx.scene.shape.Box;
 import javafx.scene.transform.Rotate;
@@ -20,9 +18,11 @@ public class Player extends Group {
     private double forwardAcceleration, verticalAcceleration, sidewardsAcceleration;
     public Rotate rotateY;
     public Rotate rotateX;
-    public Scene scene;
+    public SubScene scene;
+    private double speed;
 
-    public Player(double x, double y, double z, Scene s) {
+    public Player(double x, double y, double z, SubScene s) {
+        speed = 1;
         scene = s;
         hitbox = new Box(50, 80, 50);
         playerCamera = new PerspectiveCamera(true);
@@ -92,6 +92,14 @@ public class Player extends Group {
 
     public double getSidewardsAcceleration() {
         return sidewardsAcceleration;
+    }
+
+    public void setSpeed(double speed){
+        this.speed = speed;
+    }
+
+    public double getSpeed(){
+        return this.speed;
     }
 
     public void setPosition(double x, double y, double z) {

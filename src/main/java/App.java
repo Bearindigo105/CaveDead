@@ -4,8 +4,11 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.SubScene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.*;
 import javafx.scene.shape.*;
 import javafx.stage.Stage;
@@ -22,38 +25,43 @@ public class App extends Application {
         Group mapGroup = new Group();
 
         //Box box = new Door(false);
-        
+
         Room room = new Room(Room.Type.corridor);
 
         mapGroup.getChildren().addAll(room);
         
         Group gameGroup = new Group();
 
-        Scene gameScene = new Scene(gameGroup, WIDTH, HEIGHT);
+        SubScene gameSubScene = new SubScene(gameGroup, WIDTH, HEIGHT);
 
-        Player player = new Player(0, 0, -500, gameScene);
+        Player player = new Player(0, 0, -500, gameSubScene);
 
         HUD hud = new HUD();
-        gameGroup.getChildren().addAll(player, mapGroup, hud);
+        gameGroup.getChildren().addAll(player, mapGroup);
 
-        gameScene.setFill(Color.ALICEBLUE);
+        gameSubScene.setFill(Color.ALICEBLUE);
 
-        gameScene.setCamera(player.playerCamera);
+        gameSubScene.setCamera(player.playerCamera);
+
+        BorderPane gamePane = new BorderPane();
 
         primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             Platform.runLater(() -> {
                 switch (event.getCode()) {
                     case W:
-                        player.setForwardAcceleration(1);
+                        player.setForwardAcceleration(player.getSpeed());
                         break;
                     case S:
-                        player.setForwardAcceleration(-1);
+                        player.setForwardAcceleration(-1 * player.getSpeed());
                         break;
                     case D:
-                        player.setSidewardAcceleration(1);
+                        player.setSidewardAcceleration(player.getSpeed());
                         break;
                     case A:
-                        player.setSidewardAcceleration(-1);
+                        player.setSidewardAcceleration(-1 * player.getSpeed());
+                        break;
+                    case SHIFT:
+                        player.setSpeed(3);
                         break;
                     default:
                         break;
@@ -75,6 +83,9 @@ public class App extends Application {
                         break;
                     case A:
                         player.setSidewardAcceleration(0);
+                        break;
+                    case SHIFT:
+                        player.setSpeed(1);
                         break;
                     default:
                         break;
