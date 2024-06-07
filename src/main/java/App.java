@@ -2,12 +2,19 @@ package main.java;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.SubScene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.*;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Box;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.transform.Affine;
+import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
 public class App extends Application {
@@ -15,31 +22,40 @@ public class App extends Application {
     public static final int WIDTH = 800;
     public static final int HEIGHT = 600;
 
+    public static PhongMaterial doorMaterial = new PhongMaterial();
+    public static PhongMaterial wallMaterial = new PhongMaterial();
+
     @Override
     public void start(Stage primaryStage) throws Exception {
-        PhongMaterial wallMaterial = new PhongMaterial();
-        wallMaterial.setDiffuseMap(new Image("file:src/main/resources/textures/cavewall.jpg"));
-        Group mapGroup = new Group();
+        doorMaterial.setDiffuseMap(new Image("file:src/main/resources/images/metaldoor.jpg"));
+        wallMaterial.setDiffuseMap(new Image("file:src/main/resources/images/cavewall.jpg"));
 
-        //Box box = new Door(wallMaterial);
-
-        
-
-        Room room = new Room(Room.Type.blank);
-
-        mapGroup.getChildren().addAll(room);
         
         Group gameGroup = new Group();
 
-        Scene gameScene = new Scene(gameGroup, WIDTH, HEIGHT);
+        Maze maze = new Maze(20, 20);
+        Box floor = new Box(20000, 20000, 0.1);
+        floor.setMaterial(wallMaterial);
 
-        Player player = new Player(0, 0, -500, gameScene);
+        SubScene gameSubScene = new SubScene(gameGroup, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED);
+        Group mapGroup = new Group();
+        mapGroup.getChildren().addAll(floor);
 
-        gameGroup.getChildren().addAll(player, mapGroup);
+        Player player = new Player(0, 10, -500, gameSubScene);
 
-        gameScene.setFill(Color.ALICEBLUE);
+        HUD hud = new HUD();
+        gameGroup.getChildren().addAll(player, mapGroup, maze);
 
-        gameScene.setCamera(player.playerCamera);
+        gameSubScene.setFill(Color.ALICEBLUE);
+
+        gameSubScene.setCamera(player.playerCamera);
+
+        BorderPane gamePane = new BorderPane();
+
+        gamePane.setTop(hud);
+        gamePane.setCenter(gameSubScene);
+
+        Scene gameScene = new Scene(gamePane);
 
         primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             Platform.runLater(() -> {
@@ -55,6 +71,9 @@ public class App extends Application {
                         break;
                     case A:
                         player.setSidewardAcceleration(-1);
+                        break;
+                    case SHIFT:
+                        player.setSpeed(3);
                         break;
                     default:
                         break;
@@ -77,12 +96,14 @@ public class App extends Application {
                     case A:
                         player.setSidewardAcceleration(0);
                         break;
+                    case SHIFT:
+                        player.setSpeed(1);
+                        break;
                     default:
                         break;
                 }
             });
         });
-
         Group titleGroup = new Group();
         Scene titleScene = new Scene(titleGroup, WIDTH, HEIGHT);
 
