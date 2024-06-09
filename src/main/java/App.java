@@ -2,10 +2,10 @@ package main.java;
 
 import java.util.List;
 
-import javax.swing.JButton;
 import javax.swing.ImageIcon;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -24,6 +24,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
+import javafx.scene.control.Button;
 
 public class App extends Application {
 
@@ -118,16 +119,14 @@ public class App extends Application {
 
         titlePane.setStyle("-fx-background-color: black;");
         ImageView title = new ImageView();
-        title.setImage(new javafx.scene.image.Image("file:src/main/resources/textures/game.png"));
+        title.setImage(new Image("file:src/main/resources/textures/game.png"));
         title.relocate((WIDTH / 2) - 175, (HEIGHT / 2) - 100);
-        JButton playButton = new JButton();
-        JButton playButton2 = new JButton();
-        playButton.set(new java.awt.Image("file:src/main/resources/textures/playbutton.png"));
-        playButton.relocate((WIDTH / 2) - 70, (HEIGHT / 2) + 100);
-        ImageView playButton1 = new ImageView();
-        playButton2.setImage(new Image("file:src/main/resources/textures/playbutton1.png"));
-        playButton2.relocate((WIDTH / 2) - 70, (HEIGHT / 2) + 100);
         
+        ImageView playButtonImageView = new ImageView(new Image("file:src/main/resources/textures/playbutton.png"));
+        Button playButton = new Button("", playButtonImageView);
+        playButton.setPadding(Insets.EMPTY);
+        playButton.relocate(WIDTH /2 - 50, HEIGHT / 2 + 50);
+
         titlePane.getChildren().addAll(title); 
         titlePane.getChildren().addAll(playButton); 
 
@@ -136,7 +135,7 @@ public class App extends Application {
         primaryStage.setScene(titleScene);
         primaryStage.show();
 
-        primaryStage.addEventHandler(KeyEvent.mou, event -> {
+        primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             Platform.runLater(() -> {
                 switch (event.getCode()) {
                     
