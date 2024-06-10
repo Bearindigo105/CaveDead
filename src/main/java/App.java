@@ -49,16 +49,16 @@ public class App extends Application {
 
         Group gameGroup = new Group();
 
-        MazeGenerator maze = new MazeGenerator(20, 20);
+        MazeGenerator maze = new MazeGenerator(25, 25);
 
         SubScene gameSubScene = new SubScene(gameGroup, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED);
-        Group mapGroup = new Group();
-        mapGroup.getChildren().addAll(maze.getWalls());
+        
 
         player = new Player(0, -10, 0, 0.5, 1, gameSubScene, maze.getWalls());
 
         HUD hud = new HUD();
-        gameGroup.getChildren().addAll(mapGroup, player);
+        gameGroup.getChildren().addAll(maze.getWalls());
+        gameGroup.getChildren().add(player);
 
         gameSubScene.setFill(Color.PURPLE);
 
@@ -179,6 +179,7 @@ public class App extends Application {
         primaryStage.setTitle("caveDEAD");
         primaryStage.setScene(titleScene);
         primaryStage.show();
+        playSound();
 
         playButton.setOnMousePressed(event -> {
             Platform.runLater(() -> {
@@ -201,7 +202,7 @@ public class App extends Application {
      */
     private void playSound() {
         try {
-            Media sound = new Media(new File("src/main/resources/sounds/.mp3").toURI().toString());
+            Media sound = new Media(new File("src/main/resources/sounds/titlebkgsound.mp3").toURI().toString());
             MediaPlayer player = new MediaPlayer(sound);
             player.play();
         } catch (Exception e) {

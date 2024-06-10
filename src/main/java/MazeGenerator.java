@@ -33,18 +33,18 @@ public class MazeGenerator {
         }
 
         for (int i = 0; i < MAZE_WIDTH; i++) {
-            walls.add(new Wall(getCell(i, 0), getCell(i, -1)));
-            walls.add(new Wall(getCell(i, MAZE_HEIGHT - 1), getCell(i, MAZE_HEIGHT)));
+            walls.add(new Wall(getCell(i, 0), getCell(i, -1), this));
+            walls.add(new Wall(getCell(i, MAZE_HEIGHT - 1), getCell(i, MAZE_HEIGHT), this));
         }
         for (int j = 0; j < MAZE_HEIGHT; j++) {
-            walls.add(new Wall(getCell(0, j), getCell(-1, j)));
-            walls.add(new Wall(getCell(MAZE_WIDTH - 1, j), getCell(MAZE_WIDTH, j)));
+            walls.add(new Wall(getCell(0, j), getCell(-1, j), this));
+            walls.add(new Wall(getCell(MAZE_WIDTH - 1, j), getCell(MAZE_WIDTH, j), this));
         }
 
         for (Cell cell : maze) {
             for (Cell neighbour : getNeighbours(cell)) {
                 if (getWall(neighbour, cell) == null && getWall(cell, neighbour) == null && cell != neighbour) {
-                    walls.add(new Wall(cell, neighbour));
+                    walls.add(new Wall(cell, neighbour, this));
                 }
             }
         }

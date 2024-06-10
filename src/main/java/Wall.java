@@ -11,26 +11,23 @@ public class Wall extends Box {
     private Cell c1;
     private Cell c2;
     private Rotate rotateY;
-
+    private static final double LENGTH = 200;
     /**
      * @apiNote only constructor. also rotates the wall and positions it in the
      * 
      *          correct spot.
      */
-    public Wall(Cell c1, Cell c2) {
-        super(100, 100, 5); // Adjust dimensions as needed
+    public Wall(Cell c1, Cell c2, MazeGenerator p) {
+        super(LENGTH, 200, 5);
         setMaterial(App.wallMaterial);
         rotateY = new Rotate(0, Rotate.Y_AXIS);
         this.c1 = c1;
         this.c2 = c2;
-
-        // Calculate midpoint between two cells
         double midX = (c1.getMazeX() + c2.getMazeX()) / 2.0;
         double midY = (c1.getMazeY() + c2.getMazeY()) / 2.0;
 
-        // Set wall position based on midpoint
-        translateXProperty().set(midX * 100); // Adjust scale factor as needed
-        translateZProperty().set(midY * 100); // Adjust scale factor as needed
+        translateXProperty().set(midX * LENGTH);
+        translateZProperty().set(midY * LENGTH);
 
         rotateY.pivotXProperty().bind(translateXProperty());
         rotateY.pivotZProperty().bind(translateZProperty());
@@ -52,28 +49,5 @@ public class Wall extends Box {
         return c2;
     }
 
-    /**
-     * @param x
-     * @param y
-     * @param width
-     * @param depth
-     * these 4 parameters define bounds
-     * @return true if the bounds in params intersect this wall
-     */
-    public boolean isIntersecting(double x, double z, double width, double depth) {
-        double wallMinX = Math.min(c1.getMazeX(), c2.getMazeX()) * 100;
-        double wallMaxX = Math.max(c1.getMazeX(), c2.getMazeX()) * 100;
-        double wallMinZ = Math.min(c1.getMazeY(), c2.getMazeY()) * 100;
-        double wallMaxZ = Math.max(c1.getMazeY(), c2.getMazeY()) * 100;
-    
-        System.out.println("Wall bounds: minX=" + wallMinX + ", maxX=" + wallMaxX + ", minZ=" + wallMinZ + ", maxZ=" + wallMaxZ);
-        System.out.println("Object bounds: x=" + x + ", z=" + z + ", width=" + width + ", depth=" + depth);
-        
-        boolean isIntersecting = x + width / 2 > wallMinX && x - width / 2 < wallMaxX &&
-                z + depth / 2 > wallMinZ && z - depth / 2 < wallMaxZ;
-        
-        System.out.println("Is intersecting? " + isIntersecting);
-        return isIntersecting;
-    }
-    
+
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import javax.swing.Timer;
 
 import javafx.animation.AnimationTimer;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Camera;
 import javafx.scene.Group;
@@ -57,7 +58,6 @@ public class Player extends Group {
         this.scene = scene;
         this.mazeWalls = walls;
 
-        // Initialize player components
         hitbox = new Box(20, 80, 20);
         playerCamera = new PerspectiveCamera(true);
         rotateY = new Rotate(0, Rotate.Y_AXIS);
@@ -66,11 +66,10 @@ public class Player extends Group {
         playerCamera.setNearClip(0.1);
         playerCamera.setFarClip(10000);
 
-        // Bind hitbox and camera positions
         this.getChildren().addAll(hitbox, playerCamera);
 
         playerCamera.translateXProperty().bind(translateXProperty());
-        playerCamera.translateYProperty().bind(translateYProperty().subtract(500));
+        playerCamera.translateYProperty().bind(translateYProperty());
         playerCamera.translateZProperty().bind(translateZProperty());
 
         hitbox.translateXProperty().bindBidirectional(translateXProperty());
@@ -85,15 +84,12 @@ public class Player extends Group {
         rotateX.pivotYProperty().bind(translateYProperty());
         rotateX.pivotZProperty().bind(translateZProperty());
 
-        playerCamera.getTransforms().addAll(rotateY, rotateX);
+        getTransforms().add(rotateY);
 
-        // Set initial position
         setPosition(x, y, z);
 
-        // Add mouse event handlers
         setupMouseControls();
 
-        // Setup footstep timers
         setupFootstepTimers();
     }
 
@@ -154,7 +150,6 @@ public class Player extends Group {
             MediaPlayer player = new MediaPlayer(sound);
             player.play();
         } catch (Exception e) {
-            // Handle exception if needed
         }
     }
 
@@ -177,7 +172,7 @@ public class Player extends Group {
      *          for footsteps by alternating between the 2 different timers
      */
     private void update() {
-        // Calculate movement vectors
+
         double angleInRadians = Math.toRadians(rotateY.getAngle());
         double angleInRadiansPlus90 = Math.toRadians(rotateY.getAngle() + 90);
 
@@ -192,7 +187,6 @@ public class Player extends Group {
         double deltaX = forwardVector.getX() + sidewardVector.getX();
         double deltaZ = forwardVector.getY() + sidewardVector.getY();
 
-        // Adjust speed based on sprinting
         if (isSprinting) {
             deltaX *= sprintingSpeed;
             deltaZ *= sprintingSpeed;
@@ -201,13 +195,14 @@ public class Player extends Group {
             deltaZ *= walkingSpeed;
         }
 
-        // Check collision with walls
-        if (checkCollision(getTranslateX() + deltaX, getTranslateZ() + deltaZ)) {
+        if (checkCollision()) {
             translateXProperty().set(getTranslateX() + deltaX);
             translateZProperty().set(getTranslateZ() + deltaZ);
+        } else {
+            translateXProperty().set(getTranslateX() - deltaX);
+            translateZProperty().set(getTranslateZ() - deltaZ);
         }
 
-        // Play footstep sounds
         if (forwardsAcceleration != 0 || sidewardsAcceleration != 0) {
             if (isSprinting) {
                 if (!sprintingFootstepTimer.isRunning()) {
@@ -233,13 +228,23 @@ public class Player extends Group {
      * @param newZ The new z-coordinate after movement.
      * @return True if there is no collision, false otherwise.
      */
-    private boolean checkCollision(double newX, double newZ) {
+    private boolean checkCollision() {
         for (Wall wall : mazeWalls) {
-            if (wall.isIntersecting(newX, newZ, hitbox.getWidth(), hitbox.getDepth())) {
+            if (isIntersecting(wall)) {
                 return false;
             }
         }
         return true;
+    }
+
+    /**
+     * @param Wall
+     * @return true if the wall in param intersects this Player's hitbox
+     */
+    public boolean isIntersecting(Wall wall) {
+        Bounds playerBounds = this.localToParent(this.getHitbox().getBoundsInParent());
+        Bounds wallBounds = wall.getBoundsInParent();
+        return playerBounds.intersects(wallBounds);
     }
 
     public Box getHitbox() {
