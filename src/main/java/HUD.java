@@ -4,23 +4,25 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.Group;
 import javafx.scene.text.Text;
 
+/**
+ * @author Subhash
+ */
 public class HUD extends Group{
-    private int stamina;
-    private int health;
-    private int torch;
+
+    private double stamina;
+    private double health;
+    private double torch;
     private Text staminaText;
     private Text healthText;
     private Text torchText;
-    private Inventory inventory;
     public HUD() {
         super();
         staminaText = new Text();
         healthText = new Text();
         torchText = new Text();
-        inventory = new Inventory(5);
         staminaText.relocate(0, 0);
         torchText.relocate(0,13);
-        this.getChildren().addAll(staminaText, healthText, torchText, inventory);
+        this.getChildren().addAll(staminaText, healthText, torchText);
         stamina = 100;
         health = 100;
         torch = 100;
@@ -32,33 +34,36 @@ public class HUD extends Group{
         }.start();
     }
 
+    /**
+     * @apiNote updates the text of stamina health and torch based on their respective double fields
+     */
     public void update(){
         staminaText.setText("stamina: " + stamina + "%");
         healthText.setText("health: " + health + "%");
         torchText.setText("torch: " + torch + "%");
     }
 
-    public void setHealth(int health){
+    public void setHealth(double health){
         this.health = health;
     }
 
-    public int getHealth(){
+    public double getHealth(){
         return this.health;
     }
 
-    public void setStamina(int stamina){
+    public void setStamina(double stamina){
         this.stamina = stamina;
     }
 
-    public int getStamina(){
+    public double getStamina(){
         return this.stamina;
     }
 
-    public void setTorch(int torch){
+    public void setTorch(double torch){
         this.torch = torch;
     }
 
-    public int getTorch(){
+    public double getTorch(){
         return this.torch;
     }
 }

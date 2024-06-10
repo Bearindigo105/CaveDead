@@ -1,12 +1,13 @@
 package main.java;
 
-import java.util.List;
+import java.io.File;
+import java.util.ArrayList;
 
-import javax.swing.ImageIcon;
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
-import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -18,44 +19,53 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.*;
 import javafx.scene.shape.Box;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.transform.Affine;
-import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
-import javafx.scene.control.Button;
+import javax.swing.Timer;
 
 public class App extends Application {
 
     public static final int WIDTH = 800;
     public static final int HEIGHT = 600;
 
-    public static PhongMaterial doorMaterial = new PhongMaterial();
-    public static PhongMaterial wallMaterial = new PhongMaterial();
+    /**
+     * @apiNote the texture of the walls in the maze
+     */
+    public final static PhongMaterial wallMaterial = new PhongMaterial();
 
+    /**
+     * @apiNote the character
+     */
+    public static Player player;
+
+    /**
+     * @author Subhash, Pranav
+     * @apiNote this method starts the JavaFX application. It sets up the
+     * game, initializes the player and maze, configures the HUD and input handlers, and manages
+     * the transition between the title screen and the game scene.
+     * @param primaryStage the primary stage for this application, onto which the application scene can be set
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        doorMaterial.setDiffuseMap(new Image("file:src/main/resources/images/metaldoor.jpg"));
-        wallMaterial.setDiffuseMap(new Image("file:src/main/resources/images/cavewall.jpg"));
+        wallMaterial.setDiffuseMap(new Image("file:src/main/resources/textures/cavewall.jpg"));
 
-        
         Group gameGroup = new Group();
 
-        Maze maze = new Maze(20, 20);
-        Box floor = new Box(20000, 20000, 0.1);
-        floor.setMaterial(wallMaterial);
+        MazeGenerator maze = new MazeGenerator(20, 20);
 
         SubScene gameSubScene = new SubScene(gameGroup, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED);
         Group mapGroup = new Group();
-        mapGroup.getChildren().addAll(floor);
+        mapGroup.getChildren().addAll(maze.getWalls());
 
-        Player player = new Player(0, 10, -500, gameSubScene);
+        player = new Player(0, 10, -200, 0.5, 1, gameSubScene);
 
         HUD hud = new HUD();
-        gameGroup.getChildren().addAll(player, mapGroup, maze);
+        gameGroup.getChildren().addAll(mapGroup, player);
 
-        gameSubScene.setFill(Color.ALICEBLUE);
+        gameSubScene.setFill(Color.PURPLE);
 
         gameSubScene.setCamera(player.playerCamera);
 
@@ -66,23 +76,46 @@ public class App extends Application {
 
         Scene gameScene = new Scene(gamePane);
 
+        Timer sprintingTimer = new Timer(1, sprintlistener -> {
+            if (hud.getStamina() > 0) {
+                hud.setStamina(hud.getStamina() - 0.022);
+                player.setIsSprinting(true);
+            } else if (hud.getStamina() <= 0) {
+                hud.setStamina(0);
+                player.setIsSprinting(false);
+            }
+        });
+
+        Timer sprintRegenTimer = new Timer(1, sprintRegenlistener -> {
+            if (hud.getStamina() < 100) {
+                hud.setStamina(hud.getStamina() + 0.01);
+            } else {
+                hud.setStamina(100);
+            }
+        });
+
         primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             Platform.runLater(() -> {
                 switch (event.getCode()) {
                     case W:
-                        player.setForwardAcceleration(1);
+                        player.setIsMoving(true);
+                        player.setForwardsAcceleration(1);
                         break;
                     case S:
-                        player.setForwardAcceleration(-1);
+                        player.setIsMoving(true);
+                        player.setForwardsAcceleration(-1);
                         break;
                     case D:
-                        player.setSidewardAcceleration(1);
+                        player.setIsMoving(true);
+                        player.setSidewardsAcceleration(1);
                         break;
                     case A:
-                        player.setSidewardAcceleration(-1);
+                        player.setIsMoving(true);
+                        player.setSidewardsAcceleration(-1);
                         break;
                     case SHIFT:
-                        player.setSpeed(3);
+                        sprintRegenTimer.stop();
+                        sprintingTimer.start();
                         break;
                     default:
                         break;
@@ -94,19 +127,25 @@ public class App extends Application {
             Platform.runLater(() -> {
                 switch (event.getCode()) {
                     case W:
-                        player.setForwardAcceleration(0);
+                        player.setIsMoving(false);
+                        player.setForwardsAcceleration(0);
                         break;
                     case S:
-                        player.setForwardAcceleration(0);
+                        player.setIsMoving(false);
+                        player.setForwardsAcceleration(0);
                         break;
                     case D:
-                        player.setSidewardAcceleration(0);
+                        player.setIsMoving(false);
+                        player.setSidewardsAcceleration(0);
                         break;
                     case A:
-                        player.setSidewardAcceleration(0);
+                        player.setIsMoving(false);
+                        player.setSidewardsAcceleration(0);
                         break;
                     case SHIFT:
-                        player.setSpeed(1);
+                        sprintingTimer.stop();
+                        sprintRegenTimer.start();
+                        player.setIsSprinting(false);
                         break;
                     default:
                         break;
@@ -120,30 +159,66 @@ public class App extends Application {
         titlePane.setStyle("-fx-background-color: black;");
         ImageView title = new ImageView();
         title.setImage(new Image("file:src/main/resources/textures/game.png"));
-        title.relocate((WIDTH / 2) - 175, (HEIGHT / 2) - 100);
-        
-        ImageView playButtonImageView = new ImageView(new Image("file:src/main/resources/textures/playbutton.png"));
+        title.relocate((WIDTH / 2) - 167, (HEIGHT / 2) - 120);
+
+        Image playButtonIdle = new Image("file:src/main/resources/textures/playbutton.png");
+        Image playButtonHover = new Image("file:src/main/resources/textures/playbutton1.png");
+        ImageView playButtonImageView = new ImageView(playButtonIdle);
         Button playButton = new Button("", playButtonImageView);
         playButton.setPadding(Insets.EMPTY);
-        playButton.relocate(WIDTH /2 - 50, HEIGHT / 2 + 50);
+        playButton.relocate(WIDTH / 2 - 113 / 2.0, HEIGHT / 2 + 55);
+        playButton.setOnMouseEntered(event -> {
+            Platform.runLater(() -> {
+                ((ImageView) playButton.getGraphic()).setImage(playButtonHover);
+            });
+        });
+        playButton.setOnMouseExited(event -> {
+            Platform.runLater(() -> {
+                ((ImageView) playButton.getGraphic()).setImage(playButtonIdle);
+            });
+        });
 
-        titlePane.getChildren().addAll(title); 
-        titlePane.getChildren().addAll(playButton); 
-
+        titlePane.getChildren().addAll(title);
+        titlePane.getChildren().addAll(playButton);
 
         primaryStage.setTitle("caveDEAD");
         primaryStage.setScene(titleScene);
         primaryStage.show();
 
-        primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+        playButton.setOnMousePressed(event -> {
             Platform.runLater(() -> {
-                switch (event.getCode()) {
-                    
-                }
+                primaryStage.setScene(gameScene);
+                new AnimationTimer() {
+                    @Override
+                    public void handle(long now) {
+                        player.update();
+                        player.updateCollision(maze.getWalls());
+                        hud.setHealth(hud.getHealth() - 0.002);
+                    }
+                }.start();
             });
         });
+
     }
 
+    /**
+     * @author Subhash
+     * @apiNote a method to play a sound
+     */
+    private void playSound() {
+        try {
+            Media sound = new Media(new File("src/main/resources/sounds/.mp3").toURI().toString());
+            MediaPlayer player = new MediaPlayer(sound);
+            player.play();
+        } catch (Exception e) {
+        }
+    }
+
+
+    /**
+     * @param args
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
         launch(args);
     }
