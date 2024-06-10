@@ -26,14 +26,21 @@ public class MazeGenerator {
         maze = new ArrayList<Cell>();
         walls = new ArrayList<Wall>();
 
-        // Initialize cells
         for (int i = 0; i < MAZE_WIDTH; i++) {
             for (int j = 0; j < MAZE_HEIGHT; j++) {
                 maze.add(new Cell(i, j, false));
             }
         }
 
-        // Initialize walls
+        for (int i = 0; i < MAZE_WIDTH; i++) {
+            walls.add(new Wall(getCell(i, 0), getCell(i, -1)));
+            walls.add(new Wall(getCell(i, MAZE_HEIGHT - 1), getCell(i, MAZE_HEIGHT)));
+        }
+        for (int j = 0; j < MAZE_HEIGHT; j++) {
+            walls.add(new Wall(getCell(0, j), getCell(-1, j)));
+            walls.add(new Wall(getCell(MAZE_WIDTH - 1, j), getCell(MAZE_WIDTH, j)));
+        }
+
         for (Cell cell : maze) {
             for (Cell neighbour : getNeighbours(cell)) {
                 if (getWall(neighbour, cell) == null && getWall(cell, neighbour) == null && cell != neighbour) {
@@ -42,7 +49,6 @@ public class MazeGenerator {
             }
         }
 
-        // Start DFS from the first cell
         Cell startCell = getCell(0, 0);
         if (startCell != null) {
             startCell.setIsVisited(true);
@@ -52,19 +58,18 @@ public class MazeGenerator {
 
     /**
      * @param currentCell
-     * @apiNote Given a current cell as a parameter, Mark the current cell as visited, While the current cell has any unvisited neighbour cells:
-     * 1. Choose one of the unvisited neighbours
-     * 2. Remove the wall between the current cell and the chosen cell
-     * 3. Invoke the routine recursively for the chosen cell
+     * @apiNote Given a current cell as a parameter, Mark the current cell as
+     *          visited, While the current cell has any unvisited neighbour cells:
+     *          1. Choose one of the unvisited neighbours
+     *          2. Remove the wall between the current cell and the chosen cell
+     *          3. Invoke the routine recursively for the chosen cell
      */
     public void DFSgenerateMaze(Cell currentCell) {
         currentCell.setIsVisited(true);
 
-        // Get unvisited neighbours and shuffle for random selection
         ArrayList<Cell> unvisitedNeighbours = getUnvisitedNeighbours(currentCell);
         Collections.shuffle(unvisitedNeighbours);
 
-        // Recursive DFS
         for (Cell chosenNeighbor : unvisitedNeighbours) {
             if (!chosenNeighbor.getIsVisited()) {
                 removeWall(currentCell, chosenNeighbor);
@@ -88,7 +93,8 @@ public class MazeGenerator {
     }
 
     /**
-     * @apiNote goes through all neighbours and if visited is false, add it to an arraylist
+     * @apiNote goes through all neighbours and if visited is false, add it to an
+     *          arraylist
      * @param cell
      * @return an arraylist of Cell
      */
@@ -111,13 +117,17 @@ public class MazeGenerator {
         ArrayList<Cell> arrNeighbours = new ArrayList<Cell>();
         Cell checkCell;
         checkCell = getCell(cell.getMazeX() + 1, cell.getMazeY());
-        if (checkCell != null) arrNeighbours.add(checkCell);
+        if (checkCell != null)
+            arrNeighbours.add(checkCell);
         checkCell = getCell(cell.getMazeX() - 1, cell.getMazeY());
-        if (checkCell != null) arrNeighbours.add(checkCell);
+        if (checkCell != null)
+            arrNeighbours.add(checkCell);
         checkCell = getCell(cell.getMazeX(), cell.getMazeY() + 1);
-        if (checkCell != null) arrNeighbours.add(checkCell);
+        if (checkCell != null)
+            arrNeighbours.add(checkCell);
         checkCell = getCell(cell.getMazeX(), cell.getMazeY() - 1);
-        if (checkCell != null) arrNeighbours.add(checkCell);
+        if (checkCell != null)
+            arrNeighbours.add(checkCell);
 
         return arrNeighbours;
     }
@@ -133,7 +143,7 @@ public class MazeGenerator {
                 return cell;
             }
         }
-        return null;
+        return new Cell(x, y, true);
     }
 
     /**
@@ -163,7 +173,6 @@ public class MazeGenerator {
     public void printMaze() {
         char[][] mazeRepresentation = new char[MAZE_HEIGHT * 2 + 1][MAZE_WIDTH * 2 + 1];
 
-        // Initialize the maze representation with walls
         for (int y = 0; y < mazeRepresentation.length; y++) {
             for (int x = 0; x < mazeRepresentation[0].length; x++) {
                 if (y % 2 == 0 && x % 2 == 0) {
@@ -178,7 +187,6 @@ public class MazeGenerator {
             }
         }
 
-        // Mark the paths
         for (int y = 0; y < MAZE_HEIGHT; y++) {
             for (int x = 0; x < MAZE_WIDTH; x++) {
                 Cell cell = getCell(x, y);
@@ -188,7 +196,6 @@ public class MazeGenerator {
             }
         }
 
-        // Remove the walls between connected cells
         for (Wall wall : walls) {
             int x1 = wall.getCell1().getMazeX() * 2 + 1;
             int y1 = wall.getCell1().getMazeY() * 2 + 1;
@@ -202,7 +209,6 @@ public class MazeGenerator {
             }
         }
 
-        // Print the maze
         for (int y = 0; y < mazeRepresentation.length; y++) {
             for (int x = 0; x < mazeRepresentation[0].length; x++) {
                 System.out.print(mazeRepresentation[y][x]);

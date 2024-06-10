@@ -41,15 +41,17 @@ public class Player extends Group {
 
     /**
      * Creates a new Player object.
-     * @param x Initial x-coordinate of the player.
-     * @param y Initial y-coordinate of the player.
-     * @param z Initial z-coordinate of the player.
-     * @param walkingSpeed The walking speed of the player.
+     * 
+     * @param x              Initial x-coordinate of the player.
+     * @param y              Initial y-coordinate of the player.
+     * @param z              Initial z-coordinate of the player.
+     * @param walkingSpeed   The walking speed of the player.
      * @param sprintingSpeed The sprinting speed of the player.
-     * @param scene The SubScene that the player is in.
-     * @param walls The list of maze walls for collision detection.
+     * @param scene          The SubScene that the player is in.
+     * @param walls          The list of maze walls for collision detection.
      */
-    public Player(double x, double y, double z, double walkingSpeed, double sprintingSpeed, SubScene scene, List<Wall> walls) {
+    public Player(double x, double y, double z, double walkingSpeed, double sprintingSpeed, SubScene scene,
+            List<Wall> walls) {
         this.walkingSpeed = walkingSpeed;
         this.sprintingSpeed = sprintingSpeed;
         this.scene = scene;
@@ -66,7 +68,7 @@ public class Player extends Group {
 
         // Bind hitbox and camera positions
         this.getChildren().addAll(hitbox, playerCamera);
-        
+
         playerCamera.translateXProperty().bind(translateXProperty());
         playerCamera.translateYProperty().bind(translateYProperty().subtract(500));
         playerCamera.translateZProperty().bind(translateZProperty());
@@ -136,7 +138,7 @@ public class Player extends Group {
     /**
      * Starts the animation loop for player updates.
      */
-     public final AnimationTimer updateTimer =  new AnimationTimer() {
+    public final AnimationTimer updateTimer = new AnimationTimer() {
         @Override
         public void handle(long now) {
             update();
@@ -158,6 +160,7 @@ public class Player extends Group {
 
     /**
      * Sets the position of the player.
+     * 
      * @param x The x-coordinate.
      * @param y The y-coordinate.
      * @param z The z-coordinate.
@@ -167,6 +170,7 @@ public class Player extends Group {
         translateYProperty().set(y);
         translateZProperty().set(z);
     }
+
     /**
      * @author Pranav, Subhash
      * @apiNote updates the players poistion based on isSprinting also makes sound
@@ -224,21 +228,19 @@ public class Player extends Group {
 
     /**
      * Checks for collision with walls.
-     * @param deltaX The change in x-coordinate.
-     * @param deltaZ The change in z-coordinate.
+     * 
+     * @param newX The new x-coordinate after movement.
+     * @param newZ The new z-coordinate after movement.
      * @return True if there is no collision, false otherwise.
      */
     private boolean checkCollision(double newX, double newZ) {
         for (Wall wall : mazeWalls) {
-            if (wall.isIntersecting(newX, newZ, 20, 20)) {
-                System.out.println("YUH");
+            if (wall.isIntersecting(newX, newZ, hitbox.getWidth(), hitbox.getDepth())) {
                 return false;
             }
         }
-        System.out.println("NUH");
         return true;
     }
-
 
     public Box getHitbox() {
         return hitbox;
@@ -280,7 +282,7 @@ public class Player extends Group {
         return isMoving;
     }
 
-    public Camera getCamera(){
+    public Camera getCamera() {
         return playerCamera;
     }
 }

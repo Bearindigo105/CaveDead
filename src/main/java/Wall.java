@@ -56,7 +56,7 @@ public class Wall extends Box {
      * @param x
      * @param y
      * @param width
-     * @param height
+     * @param depth
      * these 4 parameters define bounds
      * @return true if the bounds in params intersect this wall
      */
@@ -66,24 +66,14 @@ public class Wall extends Box {
         double wallMinZ = Math.min(c1.getMazeY(), c2.getMazeY()) * 100;
         double wallMaxZ = Math.max(c1.getMazeY(), c2.getMazeY()) * 100;
     
-        return x + width / 2 > wallMinX && x - width / 2 < wallMaxX &&
+        System.out.println("Wall bounds: minX=" + wallMinX + ", maxX=" + wallMaxX + ", minZ=" + wallMinZ + ", maxZ=" + wallMaxZ);
+        System.out.println("Object bounds: x=" + x + ", z=" + z + ", width=" + width + ", depth=" + depth);
+        
+        boolean isIntersecting = x + width / 2 > wallMinX && x - width / 2 < wallMaxX &&
                 z + depth / 2 > wallMinZ && z - depth / 2 < wallMaxZ;
+        
+        System.out.println("Is intersecting? " + isIntersecting);
+        return isIntersecting;
     }
-    // public boolean isIntersecting(double playerX, double playerZ, double playerWidth, double playerDepth) {
-    //     double wallMinX = Math.min(c1.getMazeX(), c2.getMazeX()) * 100;
-    //     double wallMaxX = Math.max(c1.getMazeX(), c2.getMazeX()) * 100;
-    //     double wallMinZ = Math.min(c1.getMazeY(), c2.getMazeY()) * 100;
-    //     double wallMaxZ = Math.max(c1.getMazeY(), c2.getMazeY()) * 100;
-    
-    //     // Calculate player's bounds
-    //     double playerMinX = playerX - playerWidth / 2;
-    //     double playerMaxX = playerX + playerWidth / 2;
-    //     double playerMinZ = playerZ - playerDepth / 2;
-    //     double playerMaxZ = playerZ + playerDepth / 2;
-    
-    //     // Check for intersection
-    //     return playerMaxX > wallMinX && playerMinX < wallMaxX &&
-    //            playerMaxZ > wallMinZ && playerMinZ < wallMaxZ;
-    // }
     
 }

@@ -55,7 +55,7 @@ public class App extends Application {
         Group mapGroup = new Group();
         mapGroup.getChildren().addAll(maze.getWalls());
 
-        player = new Player(0, -20, 30, 0.5, 1, gameSubScene, maze.getWalls());
+        player = new Player(0, -10, 0, 0.5, 1, gameSubScene, maze.getWalls());
 
         HUD hud = new HUD();
         gameGroup.getChildren().addAll(mapGroup, player);
