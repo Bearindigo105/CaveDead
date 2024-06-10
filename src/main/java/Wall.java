@@ -11,14 +11,14 @@ public class Wall extends Box {
     private Cell c1;
     private Cell c2;
     private Rotate rotateY;
-    private static final double LENGTH = 200;
+    private static final double LENGTH = 300;
     /**
      * @apiNote only constructor. also rotates the wall and positions it in the
      * 
      *          correct spot.
      */
     public Wall(Cell c1, Cell c2, MazeGenerator p) {
-        super(LENGTH, 200, 5);
+        super(LENGTH, 300, 30);
         setMaterial(App.wallMaterial);
         rotateY = new Rotate(0, Rotate.Y_AXIS);
         this.c1 = c1;

@@ -1,7 +1,7 @@
 package main.java;
 
 import java.io.File;
-import javafx.animation.AnimationTimer;
+import java.util.TimerTask;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -18,14 +18,22 @@ import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.*;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javax.swing.Timer;
 
-public class App extends Application {
+public class App extends Application{
 
     public static final int WIDTH = 800;
     public static final int HEIGHT = 600;
 
+
+    /**
+     * @apiNote for playing the intro sounds
+     */
+    private MediaPlayer mediaPlayer;
+    
+    private static Stage primaryStage;
     /**
      * @apiNote the texture of the walls in the maze
      */
@@ -39,28 +47,35 @@ public class App extends Application {
     /**
      * @author Subhash, Pranav
      * @apiNote this method starts the JavaFX application. It sets up the
-     * game, initializes the player and maze, configures the HUD and input handlers, and manages
-     * the transition between the title screen and the game scene.
-     * @param primaryStage the primary stage for this application, onto which the application scene can be set
+     *          game, initializes the player and maze, configures the HUD and input
+     *          handlers, and manages
+     *          the transition between the title screen and the game scene.
+     * @param primaryStage the primary stage for this application, onto which the
+     *                     application scene can be set
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
+        
         wallMaterial.setDiffuseMap(new Image("file:src/main/resources/textures/cavewall.jpg"));
+        Media sound = new Media(new File("src/main/resources/sounds/titlebkgsound.mp3").toURI().toString());
+        mediaPlayer = new MediaPlayer(sound);
 
+        App.primaryStage = primaryStage;
         Group gameGroup = new Group();
 
         MazeGenerator maze = new MazeGenerator(25, 25);
 
         SubScene gameSubScene = new SubScene(gameGroup, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED);
-        
 
-        player = new Player(0, -10, 0, 0.5, 1, gameSubScene, maze.getWalls());
+        player = new Player(0, -10, 0, 1, 2, gameSubScene, maze.getWalls());
 
-        HUD hud = new HUD();
+        gameSubScene.autosize();
+
+        HUD hud = new HUD(WIDTH, HEIGHT);
         gameGroup.getChildren().addAll(maze.getWalls());
         gameGroup.getChildren().add(player);
 
-        gameSubScene.setFill(Color.PURPLE);
+        gameSubScene.setFill(Color.BLACK);
 
         gameSubScene.setCamera(player.getCamera());
 
@@ -172,43 +187,21 @@ public class App extends Application {
                 ((ImageView) playButton.getGraphic()).setImage(playButtonIdle);
             });
         });
-
-        titlePane.getChildren().addAll(title);
-        titlePane.getChildren().addAll(playButton);
-
-        primaryStage.setTitle("caveDEAD");
-        primaryStage.setScene(titleScene);
-        primaryStage.show();
-        playSound();
-
         playButton.setOnMousePressed(event -> {
             Platform.runLater(() -> {
+                mediaPlayer.stop();
                 primaryStage.setScene(gameScene);
-                new AnimationTimer() {
-                    @Override
-                    public void handle(long now) {
-                        hud.setHealth(hud.getHealth() - 0.002);
-                    }
-                }.start();
                 player.updateTimer.start();
             });
         });
 
-    }
+        titlePane.getChildren().addAll(title, playButton);
 
-    /**
-     * @author Subhash
-     * @apiNote a method to play a sound
-     */
-    private void playSound() {
-        try {
-            Media sound = new Media(new File("src/main/resources/sounds/titlebkgsound.mp3").toURI().toString());
-            MediaPlayer player = new MediaPlayer(sound);
-            player.play();
-        } catch (Exception e) {
-        }
+        primaryStage.setTitle("caveDEAD");
+        primaryStage.setScene(titleScene);
+        primaryStage.show();
+        mediaPlayer.play();
     }
-
 
     /**
      * @param args
@@ -217,4 +210,9 @@ public class App extends Application {
     public static void main(String[] args) throws Exception {
         launch(args);
     }
+
+    public static Stage getPrimaryStage() {
+        return primaryStage;
+    }
+
 }
