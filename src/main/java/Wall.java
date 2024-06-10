@@ -18,7 +18,7 @@ public class Wall extends Box {
      *          correct spot.
      */
     public Wall(Cell c1, Cell c2) {
-        super(100, 100, 20); // Adjust dimensions as needed
+        super(100, 100, 5); // Adjust dimensions as needed
         setMaterial(App.wallMaterial);
         rotateY = new Rotate(0, Rotate.Y_AXIS);
         this.c1 = c1;
@@ -51,4 +51,39 @@ public class Wall extends Box {
     public Cell getCell2() {
         return c2;
     }
+
+    /**
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     * these 4 parameters define bounds
+     * @return true if the bounds in params intersect this wall
+     */
+    public boolean isIntersecting(double x, double z, double width, double depth) {
+        double wallMinX = Math.min(c1.getMazeX(), c2.getMazeX()) * 100;
+        double wallMaxX = Math.max(c1.getMazeX(), c2.getMazeX()) * 100;
+        double wallMinZ = Math.min(c1.getMazeY(), c2.getMazeY()) * 100;
+        double wallMaxZ = Math.max(c1.getMazeY(), c2.getMazeY()) * 100;
+    
+        return x + width / 2 > wallMinX && x - width / 2 < wallMaxX &&
+                z + depth / 2 > wallMinZ && z - depth / 2 < wallMaxZ;
+    }
+    // public boolean isIntersecting(double playerX, double playerZ, double playerWidth, double playerDepth) {
+    //     double wallMinX = Math.min(c1.getMazeX(), c2.getMazeX()) * 100;
+    //     double wallMaxX = Math.max(c1.getMazeX(), c2.getMazeX()) * 100;
+    //     double wallMinZ = Math.min(c1.getMazeY(), c2.getMazeY()) * 100;
+    //     double wallMaxZ = Math.max(c1.getMazeY(), c2.getMazeY()) * 100;
+    
+    //     // Calculate player's bounds
+    //     double playerMinX = playerX - playerWidth / 2;
+    //     double playerMaxX = playerX + playerWidth / 2;
+    //     double playerMinZ = playerZ - playerDepth / 2;
+    //     double playerMaxZ = playerZ + playerDepth / 2;
+    
+    //     // Check for intersection
+    //     return playerMaxX > wallMinX && playerMinX < wallMaxX &&
+    //            playerMaxZ > wallMinZ && playerMinZ < wallMaxZ;
+    // }
+    
 }

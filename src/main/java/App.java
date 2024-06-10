@@ -1,15 +1,11 @@
 package main.java;
 
 import java.io.File;
-import java.util.ArrayList;
-
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
@@ -22,7 +18,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.*;
-import javafx.scene.shape.Box;
 import javafx.stage.Stage;
 import javax.swing.Timer;
 
@@ -60,14 +55,14 @@ public class App extends Application {
         Group mapGroup = new Group();
         mapGroup.getChildren().addAll(maze.getWalls());
 
-        player = new Player(0, 10, -200, 0.5, 1, gameSubScene);
+        player = new Player(0, -20, 30, 0.5, 1, gameSubScene, maze.getWalls());
 
         HUD hud = new HUD();
         gameGroup.getChildren().addAll(mapGroup, player);
 
         gameSubScene.setFill(Color.PURPLE);
 
-        gameSubScene.setCamera(player.playerCamera);
+        gameSubScene.setCamera(player.getCamera());
 
         BorderPane gamePane = new BorderPane();
 
@@ -191,11 +186,10 @@ public class App extends Application {
                 new AnimationTimer() {
                     @Override
                     public void handle(long now) {
-                        player.update();
-                        player.updateCollision(maze.getWalls());
                         hud.setHealth(hud.getHealth() - 0.002);
                     }
                 }.start();
+                player.updateTimer.start();
             });
         });
 
