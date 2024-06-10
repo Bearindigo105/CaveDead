@@ -290,4 +290,9 @@ public class Player extends Group {
     public Camera getCamera() {
         return playerCamera;
     }
+
+    public Cell getCurrentCell() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getCurrentCell'");
+    }
 }
